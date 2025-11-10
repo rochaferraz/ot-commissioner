@@ -105,6 +105,8 @@ if [ "$(uname)" = "Linux" ]; then
         echo "Did you forget to add '/usr/bin' to beginning of your PATH?"
         exit 1
     }
+
+    readonly CUR_DIR="$(dirname "$(realpath "$0")")"
 elif [ "$(uname)" = "Darwin" ]; then
     echo "OS is Darwin"
 
@@ -129,12 +131,12 @@ elif [ "$(uname)" = "Darwin" ]; then
         brew unlink cmake
         brew install cmake --HEAD
     }
+
+    readonly CUR_DIR=$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd -P && cd -)
 else
     echo "platform $(uname) is not fully supported"
     exit 1
 fi
-
-readonly CUR_DIR="$(dirname "$(realpath "$0")")"
 
 cd "${CUR_DIR}/.."
 if [ "${WITH_CCM}" = "1" ]; then

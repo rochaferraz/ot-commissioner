@@ -28,6 +28,13 @@
 #
 
 readonly CUR_DIR="$(dirname "$(realpath "$0")")"
+if [[ "$(uname)" == "Darwin" ]]; then
+    # Use cd -P and pwd -P to preserve the logical path,
+    # mimicking the behavior of realpath -s on Linux.
+    readonly CUR_DIR=$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd -P && cd -)
+else
+    readonly CUR_DIR=$(dirname "$(realpath -s "${BASH_SOURCE[0]}")")
+fi
 
 set -e
 
