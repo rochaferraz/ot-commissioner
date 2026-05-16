@@ -59,11 +59,14 @@ def _decode_txt_property(prop: Optional[bytes]) -> str:
     except UnicodeDecodeError:
         return f"0x{prop.hex()}"
 
-def print_service_info(zeroconf: Zeroconf, service_type: str, name: str, event: str) -> None:
+
+def print_service_info(zeroconf: Zeroconf, service_type: str, name: str,
+                       event: str) -> None:
     icon = "✅" if event == EVENT_DISCOVERED else "🔄"
     action = "Discovered" if event == EVENT_DISCOVERED else "Updated"
     print(f"\n{icon} Service {action}: {name}")
-    info: Optional[ServiceInfo] = zeroconf.get_service_info(service_type, name, timeout=SERVICE_RESOLVE_TIMEOUT_MS)
+    info: Optional[ServiceInfo] = zeroconf.get_service_info(
+        service_type, name, timeout=SERVICE_RESOLVE_TIMEOUT_MS)
     if not info:
         print("   Could not resolve details.")
         return
@@ -92,13 +95,16 @@ class ServiceListener:
     def __init__(self, q: queue.Queue) -> None:
         self.q = q
 
-    def remove_service(self, zeroconf: Zeroconf, service_type: str, name: str) -> None:
+    def remove_service(self, zeroconf: Zeroconf, service_type: str,
+                       name: str) -> None:
         print(f"\n❌ Service Removed: {name}")
 
-    def update_service(self, zeroconf: Zeroconf, service_type: str, name: str) -> None:
+    def update_service(self, zeroconf: Zeroconf, service_type: str,
+                       name: str) -> None:
         self.q.put((EVENT_UPDATED, service_type, name))
 
-    def add_service(self, zeroconf: Zeroconf, service_type: str, name: str) -> None:
+    def add_service(self, zeroconf: Zeroconf, service_type: str,
+                    name: str) -> None:
         self.q.put((EVENT_DISCOVERED, service_type, name))
 
 
@@ -116,15 +122,18 @@ def worker(q: queue.Queue, zeroconf_instance: Zeroconf) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="mDNS Service Scanner")
-    parser.add_argument('service_name',
-                        nargs='?',
-                        default="_meshcop._udp.local.",
-                        help="The mDNS service to scan for (default: %(default)s)")
+    parser.add_argument(
+        'service_name',
+        nargs='?',
+        default="_meshcop._udp.local.",
+        help="The mDNS service to scan for (default: %(default)s)")
     parser.add_argument(
         '--timeout',
         type=int,
         default=0,
-        help='Timeout in seconds after which the script will exit (default: %(default)s, 0 means no timeout)')
+        help=
+        'Timeout in seconds after which the script will exit (default: %(default)s, 0 means no timeout)'
+    )
     args = parser.parse_args()
     service_name = args.service_name
     timeout = args.timeout
